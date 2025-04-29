@@ -16,8 +16,6 @@ export function MainLayout() {
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((_event, session) => {
-      console.log(session?.user);
-
       if (session) {
         setAuth(session.user);
         router.replace("/(panel)/profile/page");
