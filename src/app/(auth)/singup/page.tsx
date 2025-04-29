@@ -41,7 +41,6 @@ export default function SignUp() {
     }
 
     setLoading(false);
-    router.replace("/");
   };
 
   return (
@@ -68,6 +67,7 @@ export default function SignUp() {
                 placeholder="Nome completo..."
                 style={styles.input}
                 value={name}
+                autoCapitalize="words"
                 onChangeText={setName}
               ></TextInput>
             </View>
@@ -78,7 +78,10 @@ export default function SignUp() {
                 placeholder="Digite seu email..."
                 style={styles.input}
                 value={email}
+                keyboardType="email-address"
                 onChangeText={setEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
               ></TextInput>
             </View>
 
@@ -90,6 +93,8 @@ export default function SignUp() {
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
+                autoCapitalize="none"
+                autoCorrect={false}
               ></TextInput>
             </View>
 
