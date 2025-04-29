@@ -1,55 +1,111 @@
-import colors from "@/constants/colors";
+import { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Alert,
+} from "react-native";
 import { router } from "expo-router";
-import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+import colors from "@/constants/colors";
+import { supabase } from "@/src/lib/supabase";
+
 export default function SignUp() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async () => {
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: name,
+        },
+      },
+    });
+
+    if (error) {
+      Alert.alert("Error", error.message);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+    router.replace("/");
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={colors.white} />
-        </Pressable>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.white }}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Pressable style={styles.backButton} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color={colors.white} />
+            </Pressable>
 
-        <Text style={styles.logoText}>
-          Dev
-          <Text style={{ color: colors.green }}> App</Text>
-        </Text>
+            <Text style={styles.logoText}>
+              Dev
+              <Text style={{ color: colors.green }}> App</Text>
+            </Text>
 
-        <Text style={styles.slogan}>Crie sua conta</Text>
-      </View>
+            <Text style={styles.slogan}>Crie sua conta</Text>
+          </View>
 
-      <View style={styles.form}>
-        <View>
-          <Text style={styles.label}>Nome completo</Text>
-          <TextInput
-            placeholder="Nome completo..."
-            style={styles.input}
-          ></TextInput>
+          <View style={styles.form}>
+            <View>
+              <Text style={styles.label}>Nome completo</Text>
+              <TextInput
+                placeholder="Nome completo..."
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+              ></TextInput>
+            </View>
+
+            <View>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                placeholder="Digite seu email..."
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+              ></TextInput>
+            </View>
+
+            <View>
+              <Text style={styles.label}>Senha</Text>
+              <TextInput
+                placeholder="Digite sua senha..."
+                style={styles.input}
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              ></TextInput>
+            </View>
+
+            <Pressable
+              disabled={loading}
+              style={styles.button}
+              onPress={handleSignup}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? "Carregando..." : "Cadastrar"}
+              </Text>
+            </Pressable>
+          </View>
         </View>
-
-        <View>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            placeholder="Digite seu email..."
-            style={styles.input}
-          ></TextInput>
-        </View>
-
-        <View>
-          <Text style={styles.label}>Senha</Text>
-          <TextInput
-            placeholder="Digite sua senha..."
-            style={styles.input}
-            secureTextEntry
-          ></TextInput>
-        </View>
-
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Acessar</Text>
-        </Pressable>
-      </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

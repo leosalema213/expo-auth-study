@@ -1,8 +1,40 @@
 import colors from "@/constants/colors";
-import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
-import { Link } from "expo-router";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Alert,
+} from "react-native";
+import { Link, router } from "expo-router";
+import { useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSignIn = async () => {
+    setLoading(true);
+    console.log("teste");
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      Alert.alert("Error", error.message);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+    router.replace("/(panel)/profile/page");
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -18,6 +50,8 @@ export default function Login() {
           <TextInput
             placeholder="Digite seu email..."
             style={styles.input}
+            value={email}
+            onChangeText={setEmail}
           ></TextInput>
         </View>
 
@@ -27,11 +61,15 @@ export default function Login() {
             placeholder="Digite sua senha..."
             style={styles.input}
             secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           ></TextInput>
         </View>
 
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Acessar</Text>
+        <Pressable style={styles.button} onPress={handleSignIn}>
+          <Text style={styles.buttonText}>
+            {loading ? "Carregando..." : "Acessar"}
+          </Text>
         </Pressable>
 
         <Link href={"/(auth)/singup/page"} style={styles.link}>
